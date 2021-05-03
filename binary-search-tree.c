@@ -1,7 +1,7 @@
 /*
  * Binary Search Tree #1
  * 작성자: 박도영
- * 작성일자 :2021/05/02
+ * 작성일자 :2021/05/03
  * Data Structures
  *
  * Department of Computer Science
@@ -63,7 +63,8 @@ int main()
 			initializeBST(&head);
 			break;
 		case 'q': case 'Q':
-			freeBST(head);
+			freeBST(head->left);
+			free(head);
 			break;
 		case 'n': case 'N':
 			printf("Your Key = ");
@@ -116,8 +117,10 @@ int main()
 int initializeBST(Node** h) {
 
 	/* if the tree is not empty, then remove all allocated nodes from the tree*/
-	if (*h != NULL)
-		freeBST(*h);
+	if (*h != NULL) {
+		freeBST((*h)->left);
+		free(*h);
+	}
 
 	/* create a head node */
 	*h = (Node*)malloc(sizeof(Node));
@@ -210,9 +213,48 @@ Node* modifiedSearch(Node* ptr, int key) {
 		}
 	}
 }
-int deleteLeafNode(Node* head, int key)
+int deleteLeafNode(Node* head, int key) //leafnode삭제 
 {
+	Node* ptr=head->left;
+	Node* trail = head; //해당 leaftNode의 부모노드를 가리킴
+	int returnKey = 0;
+	if (ptr != NULL) {//노드가 하나라도 있다면
+		while (ptr != NULL) {
+			if (key == ptr->key) //key값을 갖고있는 노드를 발견한다면
+				break;
+			trail = ptr;
+			if (key < ptr->key)
+				ptr = ptr->left;
+			else
+				ptr = ptr->right;
+		}
+		if (ptr == NULL) { //ptr이 NULL을 가리킨다는 것은 값을 찾을 수 없다는 뜻
+			printf("Cannot find the value\n");
+			return NULL;
 
+		}
+		if (ptr->left == NULL && ptr->right == NULL) { //자식노드가 없다면,즉 leaf노드라면
+			if (trail == head) {//노드가 하나 밖에 없다면
+				trail->left = NULL;
+				returnKey = ptr->key;
+				free(ptr);
+				return returnKey;
+			}
+			if (ptr->key < trail->key)//leafNode의 key가 부모노드의 key보다 작다면 부모노드의 leftChild는 NULL을 가리킨다
+				trail->left = NULL;
+			if (ptr->key < trail->key)//leaftNode의 key가 부모노드의 key보다 크다면 부모노드의 rightChild는 NULL을 가리킨다
+				trail->right = NULL;
+			returnKey = ptr->key;
+			free(ptr);
+			return returnKey;
+		}
+		else {//자식 노드가 있다면
+			printf("The node is not LeaftNode\n");
+		}
+	}
+	else { 
+		printf("There is no Node to delete\n");
+	}
 }
 
 Node* searchRecursive(Node* ptr, int key) //이원탐색 트리의 반복적 탐색 (재귀적)
@@ -246,9 +288,15 @@ Node* searchIterative(Node* head, int key) //이원탐색 트리의 반복적 �
 }
 
 
-int freeBST(Node* head)
+int freeBST(Node* head) //재귀적으로 트리 할당해제
 {
-
+	
+	if (head != NULL) {
+		freeBST(head->left);
+		freeBST(head->right);
+		free(head);
+	}
+	return 1;
 }
 
 
