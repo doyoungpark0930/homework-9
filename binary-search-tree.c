@@ -242,7 +242,7 @@ int deleteLeafNode(Node* head, int key) //leafnode삭제
 			}
 			if (ptr->key < trail->key)//leafNode의 key가 부모노드의 key보다 작다면 부모노드의 leftChild는 NULL을 가리킨다
 				trail->left = NULL;
-			if (ptr->key < trail->key)//leaftNode의 key가 부모노드의 key보다 크다면 부모노드의 rightChild는 NULL을 가리킨다
+			if (ptr->key > trail->key)//leaftNode의 key가 부모노드의 key보다 크다면 부모노드의 rightChild는 NULL을 가리킨다
 				trail->right = NULL;
 			returnKey = ptr->key;
 			free(ptr);
