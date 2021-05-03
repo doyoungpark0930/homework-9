@@ -12,13 +12,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #define _CRT_SECURE_NO_WARNINGS
-typedef struct node {
-	int key;
-	struct node* left;
-	struct node* right;
+typedef struct node { //트리 노드
+	int key; //트리 노드의 값 
+	struct node* left; //트리 노드의 왼쪽 자식 
+	struct node* right;//트리 노드의 오른쪽 자식
 } Node;
 
-int initializeBST(Node** h);
+int initializeBST(Node** h); //초기화 함수 
 
 /* functions that you have to implement */
 void inorderTraversal(Node* ptr);	  /* recursive inorder traversal */
@@ -29,19 +29,21 @@ int deleteLeafNode(Node* head, int key);  /* delete the leaf node for the key */
 Node* searchRecursive(Node* ptr, int key);  /* search the node for the key */
 Node* searchIterative(Node* head, int key);  /* search the node for the key */
 int freeBST(Node* head); /* free all memories allocated to the tree */
+Node* modifiedSearch(Node* ptr, int key);//값을 넣을 노드의 부모노드 주소 반환
 
 /* you may add your own defined functions if necessary */
 
 
 int main()
 {
+	printf("Do young park 2018038077\n");
+	printf("use it after initializing BST\n");
 	char command;
 	int key;
 	Node* head = NULL;
 	Node* ptr = NULL;	/* temp */
 
 	do {
-        printf("Do young park 2018038077");
 		printf("\n\n");
 		printf("----------------------------------------------------------------\n");
 		printf("                   Binary Search Tree #1                        \n");
@@ -131,7 +133,7 @@ void inorderTraversal(Node* ptr)//중위 순회 함수
 {
 	if (ptr != NULL) { //ptr이 NULL이 아니라면 ptr이 가리키는 구조체가 적어도 하나는 있다는 뜻
 		inorderTraversal(ptr->left);
-		printf("%d", ptr->key);
+		printf("%3d", ptr->key);
 		inorderTraversal(ptr->right);
 	}
 
@@ -140,7 +142,7 @@ void inorderTraversal(Node* ptr)//중위 순회 함수
 void preorderTraversal(Node* ptr) //전위 순회 함수
 {
 	if (ptr != NULL) {//ptr이 NULL이 아니라면 ptr이 가리키는 구조체가 적어도 하나는 있다는 뜻
-		printf("%d", ptr->key);
+		printf("%3d", ptr->key);
 		preorderTraversal(ptr->left);
 		preorderTraversal(ptr->right);
 	}
@@ -152,7 +154,7 @@ void postorderTraversal(Node* ptr) //후위 순회 함수
 	if (ptr != NULL) {//ptr이 NULL이 아니라면 ptr이 가리키는 구조체가 적어도 하나는 있다는 뜻
 		postorderTraversal(ptr->left);
 		postorderTraversal(ptr->right);
-		printf("%d", ptr->key);
+		printf("%3d", ptr->key);
 	}
 
 }
@@ -161,8 +163,53 @@ void postorderTraversal(Node* ptr) //후위 순회 함수
 int insert(Node* head, int key)
 {
 
+	if (head->left != NULL) { //노드가 적어도 하나이상 있을때 
+		Node* ptr; //새 노드를 가리키는 포인터 
+		Node* temp = modifiedSearch(head->left, key); //key의 값을 갖고 있는 노드의 부모를 가리킴,key값이 같은게있으면 NULL반환 ,없으면 부모 노드 주소 반환 
+		if (temp != NULL) { //temp가 가리키고있는 값이 있다면
+			// k is not in the tree
+			ptr = (Node*)malloc(sizeof(Node));
+			ptr->key = key;
+			ptr->left = NULL;
+			ptr->right = NULL;
+			if (key < temp->key)
+				temp->left = ptr;
+			else
+				temp->right = ptr;
+		}
+		else
+		{
+			printf("the key is already in the tree\n");
+		}
+	}
+	else { //아무 노드가 없다면
+		head->left=(Node*)malloc(sizeof(Node)); //key값이 들어간 노드를 하나 삽입한다
+		head->left->key = key;
+		head->left->left = NULL;
+		head->left->right = NULL;
+	}
+	
 }
-
+Node* modifiedSearch(Node* ptr, int key) {
+	//iterative 방식으로 탐색
+	while (ptr!=NULL) { 
+		if (key < ptr->key)//key가 ptr이 가리키고있는 노드의 key보다 작을때
+		{
+			if (ptr->left == NULL) //왼쪽 자식 노드가 없다면 그대로 가리키고 있는 노드의 주소반환
+				return ptr;
+			ptr = ptr->left; //왼쪽 자식 노드를 가리킨다
+		}
+		else if (key > ptr->key) { //key가 ptr이 가리키고있는 노드의 key보다 클때
+			if (ptr->right == NULL)
+				return ptr;
+			ptr = ptr->right;
+		}
+		else 
+		{ //key가 ptr이 가리키고 있는 노드의key와 같을때 
+			return NULL;
+		}
+	}
+}
 int deleteLeafNode(Node* head, int key)
 {
 
@@ -184,6 +231,7 @@ Node* searchRecursive(Node* ptr, int key) //이원탐색 트리의 반복적 탐
 
 Node* searchIterative(Node* head, int key) //이원탐색 트리의 반복적 탐색 (비 재귀적)
 {
+	head = head->left;
 	/*키값이 key인 노드에 대한 포인터를 반환함
 	그런 노드가 없는 경우는 NULL값 반환*/
 	while (head!=NULL) {
@@ -202,6 +250,7 @@ int freeBST(Node* head)
 {
 
 }
+
 
 
 
